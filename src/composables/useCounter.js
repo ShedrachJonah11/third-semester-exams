@@ -1,31 +1,33 @@
-import { reactive } from "vue";
+import { ref } from "vue";
+import { useStore } from "vuex";
 
-export default function useCounter(initialValue = 0) {
-  const state = reactive({
-    count: initialValue,
-  });
+export default function useCounter() {
+  const store = useStore();
 
-  function increment() {
-    state.count++;
-  }
-
-  function decrement() {
-    state.count--;
-  }
-
-  function setValue(value) {
-    state.count = value;
-  }
-
-  function reset() {
-    state.count = initialValue;
-  }
-
-  return {
-    count: state.count,
-    increment,
-    decrement,
-    setValue,
-    reset,
+  const increment = () => {
+    store.commit("increment");
   };
+
+  const decrement = () => {
+    store.commit("decrement");
+  };
+
+  const reset = () => {
+    store.commit("reset");
+  };
+
+  const setValue = (value) => {
+    store.commit("setValue", value);
+  };
+
+  const count = ref(store.state.count);
+
+  store.watch(
+    () => store.state.count,
+    (value) => {
+      count.value = value;
+    }
+  );
+
+  return { count, increment, decrement, reset, setValue };
 }
